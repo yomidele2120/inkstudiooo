@@ -33,7 +33,7 @@ const Hero = () => {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up opacity-0" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
           <Button variant="hero" size="xl" asChild>
-            <a href="#contact">Book a Consultation</a>
+            <a href="https://paystack.com/buy/consultation-cbhizq" target="_blank" rel="noopener noreferrer">Book a Consultation</a>
           </Button>
           <Button variant="heroOutline" size="xl" asChild>
             <a href="#gallery">View Portfolio</a>

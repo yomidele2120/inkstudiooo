@@ -35,7 +35,9 @@ const Header = () => {
 
           {/* Book Now Button (Desktop) */}
           <a
-            href="#contact"
+            href="https://paystack.com/buy/consultation-cbhizq"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hidden md:inline-flex px-6 py-2 border border-gold text-gold text-sm font-semibold tracking-wider uppercase hover:bg-gold hover:text-background transition-all duration-300"
           >
             Book Now
@@ -65,7 +67,9 @@ const Header = () => {
               </a>
             ))}
             <a
-              href="#contact"
+              href="https://paystack.com/buy/consultation-cbhizq"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}
               className="inline-block mt-4 px-6 py-2 border border-gold text-gold text-sm font-semibold tracking-wider uppercase hover:bg-gold hover:text-background transition-all duration-300"
             >
