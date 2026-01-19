@@ -117,8 +117,10 @@ const Contact = () => {
                   placeholder="Describe your tattoo idea, placement, size, and any reference images you have..."
                 />
               </div>
-              <Button variant="hero" size="xl" className="w-full">
-                Send Message
+              <Button variant="hero" size="xl" className="w-full" asChild>
+                <a href="https://paystack.com/buy/consultation-cbhizq" target="_blank" rel="noopener noreferrer">
+                  Book & Pay Now
+                </a>
               </Button>
               <p className="text-muted-foreground text-xs text-center">
                 Typically respond within 24-48 hours
