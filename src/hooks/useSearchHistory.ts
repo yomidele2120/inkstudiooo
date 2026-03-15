@@ -17,7 +17,7 @@ export function useSearchHistory() {
     setIsLoading(true);
     try {
       const anonId = getAnonUserId();
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('search_history')
         .select('id, query, response, created_at')
         .eq('anon_id', anonId)
@@ -36,12 +36,11 @@ export function useSearchHistory() {
   const saveSearch = useCallback(async (query: string, response: string) => {
     try {
       const anonId = getAnonUserId();
-      await supabase.from('search_history').insert({
+      await (supabase as any).from('search_history').insert({
         anon_id: anonId,
         query,
         response,
-      } as any);
-      // Refresh history
+      });
       fetchHistory();
     } catch (e) {
       console.error('Failed to save search:', e);

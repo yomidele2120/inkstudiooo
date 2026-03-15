@@ -1,15 +1,22 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function SearchBar({ large = false }: { large?: boolean }) {
+interface SearchBarProps {
+  large?: boolean;
+  language?: string;
+}
+
+export default function SearchBar({ large = false, language }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+      const lang = language || sessionStorage.getItem('su-search-lang') || 'en';
+      navigate(`/results?q=${encodeURIComponent(query.trim())}&lang=${lang}`);
+      setQuery('');
     }
   };
 
@@ -22,10 +29,16 @@ export default function SearchBar({ large = false }: { large?: boolean }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search scriptures across traditions..."
-          className={`w-full bg-card border border-border rounded-full pl-11 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all ${
+          className={`w-full bg-card border border-border rounded-xl pl-11 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all ${
             large ? 'py-4 text-base' : 'py-2.5 text-sm'
           }`}
         />
+        <button
+          type="submit"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+        >
+          <ArrowRight className="h-4 w-4" />
+        </button>
       </div>
     </form>
   );

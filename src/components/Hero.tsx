@@ -1,52 +1,47 @@
-import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-tattoo.jpg";
+import { motion } from 'framer-motion';
+import SearchBar from '@/components/SearchBar';
 
-const Hero = () => {
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+};
+
+export default function LandingHero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src={heroImage}
-          alt="Tattoo artwork"
-          className="w-full h-full object-cover opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
-      </div>
+    <section className="relative min-h-[85vh] flex items-center justify-center starfield">
+      <div className="relative z-10 container max-w-4xl text-center py-20">
+        <motion.div {...fadeUp} transition={{ duration: 0.7 }}>
+          <span className="inline-block text-5xl mb-6 gold-text">✦</span>
+          <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight tracking-tight">
+            Explore Scripture.
+            <br />
+            <span className="gold-text">Discover Unity.</span>
+          </h1>
+          <p className="text-muted-foreground mt-6 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            An AI-powered interfaith scripture platform. Search, compare, and study the
+            Qur'an, Bible, and Ethiopian Bible with scholarly context and reverence.
+          </p>
+        </motion.div>
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
-        <p className="text-gold text-sm tracking-[0.3em] uppercase mb-6 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
-          Custom Tattoo Artistry
-        </p>
-        
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-semibold text-foreground mb-6 animate-fade-up opacity-0 leading-tight" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
-          Ink That Tells
-          <br />
-          <span className="text-gradient-gold">Your Story</span>
-        </h1>
+        <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.3 }} className="mt-10">
+          <SearchBar large />
+        </motion.div>
 
-        <p className="max-w-xl mx-auto text-muted-foreground text-lg mb-10 animate-fade-up opacity-0" style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}>
-          Award-winning tattoo artist specializing in fine line, blackwork, and custom designs. 
-          Each piece is crafted with precision and passion.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up opacity-0" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
-          <Button variant="hero" size="xl" asChild>
-            <a href="https://paystack.com/buy/consultation-cbhizq" target="_blank" rel="noopener noreferrer">Book a Consultation</a>
-          </Button>
-          <Button variant="heroOutline" size="xl" asChild>
-            <a href="#gallery">View Portfolio</a>
-          </Button>
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-px h-16 bg-gradient-to-b from-gold to-transparent" />
+        <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.5 }} className="mt-8 flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50">
+            📖 Qur'an
+          </span>
+          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50">
+            ✝️ Bible
+          </span>
+          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50">
+            ⛪ Ethiopian Bible
+          </span>
+          <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50">
+            🤖 AI Powered
+          </span>
+        </motion.div>
       </div>
     </section>
   );
-};
-
-export default Hero;
+}

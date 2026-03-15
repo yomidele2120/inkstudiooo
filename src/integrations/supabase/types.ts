@@ -10,88 +10,10 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.4"
   }
   public: {
     Tables: {
-      bible_verses: {
-        Row: {
-          book: string
-          canon_type: string
-          chapter: number
-          created_at: string
-          id: string
-          text: string
-          translation: string
-          verse: number
-        }
-        Insert: {
-          book: string
-          canon_type?: string
-          chapter: number
-          created_at?: string
-          id?: string
-          text: string
-          translation: string
-          verse: number
-        }
-        Update: {
-          book?: string
-          canon_type?: string
-          chapter?: number
-          created_at?: string
-          id?: string
-          text?: string
-          translation?: string
-          verse?: number
-        }
-        Relationships: []
-      }
-      quran_verses: {
-        Row: {
-          ayah_no: number
-          ayah_no_quran: number | null
-          created_at: string
-          id: string
-          juz_no: number | null
-          place_of_revelation: string | null
-          surah_name_ar: string | null
-          surah_name_en: string
-          surah_name_roman: string | null
-          surah_no: number
-          text_ar: string | null
-          text_en: string
-        }
-        Insert: {
-          ayah_no: number
-          ayah_no_quran?: number | null
-          created_at?: string
-          id?: string
-          juz_no?: number | null
-          place_of_revelation?: string | null
-          surah_name_ar?: string | null
-          surah_name_en: string
-          surah_name_roman?: string | null
-          surah_no: number
-          text_ar?: string | null
-          text_en: string
-        }
-        Update: {
-          ayah_no?: number
-          ayah_no_quran?: number | null
-          created_at?: string
-          id?: string
-          juz_no?: number | null
-          place_of_revelation?: string | null
-          surah_name_ar?: string | null
-          surah_name_en?: string
-          surah_name_roman?: string | null
-          surah_no?: number
-          text_ar?: string | null
-          text_en?: string
-        }
-        Relationships: []
-      }
       search_history: {
         Row: {
           anon_id: string
