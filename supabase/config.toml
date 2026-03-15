@@ -1,1 +1,16 @@
-project_id = "bwrawkexdvyfnbcdxulf"
+project_id = "igbtulsrigbhfduzlkam"
+
+[functions.import-bible-verses]
+verify_jwt = false
+
+[functions.import-quran-verses]
+verify_jwt = false
+
+[functions.scripture-search]
+verify_jwt = false
+
+[functions.religious-ai]
+verify_jwt = false
+
+[functions.text-to-speech]
+verify_jwt = false
