@@ -1,43 +1,28 @@
 import { Helmet } from 'react-helmet';
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 import { History, X } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
-import AIResponse from '@/components/AIResponse';
 import LanguageSelector from '@/components/LanguageSelector';
 import SearchHistoryPanel from '@/components/SearchHistoryPanel';
-import { useAIStream } from '@/hooks/useAIStream';
 import { useSearchHistory, SearchHistoryItem } from '@/hooks/useSearchHistory';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchPage() {
-  const [searchParams] = useSearchParams();
-  const query = searchParams.get('q') || '';
-  const [language, setLanguage] = useState('en');
-  const [showHistory, setShowHistory] = useState(false);
-  const lastQueryRef = useRef('');
-
-  const { history, isLoading: historyLoading, saveSearch } = useSearchHistory();
-
-  const handleComplete = useCallback((fullText: string) => {
-    if (lastQueryRef.current && fullText) {
-      saveSearch(lastQueryRef.current, fullText);
-    }
-  }, [saveSearch]);
-
-  const { response, isLoading, error, query: aiQuery, setManualResponse } = useAIStream({
-    onComplete: handleComplete,
+  const [language, setLanguage] = useState(() => {
+    return sessionStorage.getItem('su-search-lang') || 'en';
   });
+  const [showHistory, setShowHistory] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (query && query !== lastQueryRef.current) {
-      lastQueryRef.current = query;
-      aiQuery({ query, mode: 'search', language });
-    }
-  }, [query, language]);
+  const { history, isLoading: historyLoading } = useSearchHistory();
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    sessionStorage.setItem('su-search-lang', lang);
+  };
 
   const handleHistorySelect = (item: SearchHistoryItem) => {
-    lastQueryRef.current = '';
-    setManualResponse(item.response);
+    navigate(`/results?q=${encodeURIComponent(item.query)}&cached=1`);
     setShowHistory(false);
   };
 
@@ -47,45 +32,64 @@ export default function SearchPage() {
         <title>Search Scripture — Scripture Unity AI</title>
         <meta name="description" content="Search across religious texts with AI powered relevance and comparative scripture context." />
       </Helmet>
-      <div className="min-h-screen py-8">
-      <div className="container max-w-4xl">
-        <h1 className="font-heading text-3xl font-bold text-foreground mb-6 text-center">
-          Scripture Search
-        </h1>
-
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <LanguageSelector value={language} onChange={setLanguage} />
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-accent/20 transition-colors"
-          >
-            {showHistory ? <X className="h-4 w-4" /> : <History className="h-4 w-4" />}
-            {showHistory ? 'Close' : 'Recent'}
-          </button>
-        </div>
-
-        <SearchBar large />
-
-        {showHistory && (
-          <div className="mt-4 bg-card border border-border rounded-lg p-4 max-h-80 overflow-y-auto">
-            <SearchHistoryPanel
-              history={history}
-              isLoading={historyLoading}
-              onSelect={handleHistorySelect}
-            />
+      <div className="min-h-screen py-12 starfield">
+        <div className="container max-w-3xl relative z-10">
+          <div className="text-center mb-10">
+            <span className="text-4xl mb-4 block gold-text">✦</span>
+            <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Scripture Search
+            </h1>
+            <p className="text-muted-foreground">
+              Ask any question about scriptures across traditions
+            </p>
           </div>
-        )}
 
-        <div className="mt-8">
-          <AIResponse
-            content={response}
-            isLoading={isLoading}
-            error={error}
-            placeholder={!query ? 'Enter a question or topic to search across religious traditions — "Is Jesus God?", "Genesis 1:1", "Quran Surah Al-Fatihah"' : undefined}
-          />
+          <div className="flex items-center justify-between gap-4 mb-5">
+            <LanguageSelector value={language} onChange={handleLanguageChange} />
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
+            >
+              {showHistory ? <X className="h-4 w-4" /> : <History className="h-4 w-4" />}
+              {showHistory ? 'Close' : 'Recent'}
+            </button>
+          </div>
+
+          <SearchBar large language={language} />
+
+          {showHistory && (
+            <div className="mt-4 bg-card border border-border rounded-xl p-4 max-h-80 overflow-y-auto">
+              <SearchHistoryPanel
+                history={history}
+                isLoading={historyLoading}
+                onSelect={handleHistorySelect}
+              />
+            </div>
+          )}
+
+          {/* Suggestion prompts */}
+          <div className="mt-10">
+            <p className="text-sm text-muted-foreground text-center mb-4">Try asking:</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {[
+                'Is Jesus God?',
+                'Genesis 1:1',
+                'Quran Surah Al-Fatihah',
+                'What is the Trinity?',
+                'Compare mercy in Bible and Quran',
+              ].map((q) => (
+                <button
+                  key={q}
+                  onClick={() => navigate(`/results?q=${encodeURIComponent(q)}&lang=${language}`)}
+                  className="px-3 py-1.5 rounded-full text-sm bg-secondary text-secondary-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </>
+    </>
   );
 }
