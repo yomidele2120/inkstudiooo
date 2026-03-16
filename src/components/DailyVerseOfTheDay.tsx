@@ -142,9 +142,17 @@ export default function DailyVerseOfTheDay() {
             const data = dailyVerses[source];
             const verse = data.verse;
 
-            const subtitle = source === 'quran'
-              ? `Surah ${verse.surahName} ${verse.surah}:${verse.ayah}`
-              : `${verse.book} ${verse.chapter}:${verse.verse}`;
+            let subtitle = '';
+            if (source === 'quran') {
+              const qVerse = verse as QuranVerse;
+              subtitle = `Surah ${qVerse.surahName} ${qVerse.surah}:${qVerse.ayah}`;
+            } else if (source === 'bible') {
+              const bVerse = verse as BibleVerse;
+              subtitle = `${bVerse.book} ${bVerse.chapter}:${bVerse.verse}`;
+            } else {
+              const eVerse = verse as EthiopianVerse;
+              subtitle = `${eVerse.book} ${eVerse.chapter}:${eVerse.verse}`;
+            }
 
             return (
               <div key={source} className="rounded-xl border border-border bg-card p-5">
