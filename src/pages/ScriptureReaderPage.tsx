@@ -362,21 +362,30 @@ export default function ScriptureReaderPage() {
 
                 {!isLoading && !error && !aiMainText && fallbackChapterContent.length > 0 && (
                   <div className="space-y-4">
-                    {showVerseOnly ? fallbackChapterContent
-                      .filter((item) => item.verse === showVerseOnly || item.ayah === showVerseOnly)
-                      .map((item) => (
-                        type === 'quran' ? (
-                          <article key={item.ayah} className="space-y-1">
-                            <div className="font-arabic text-right">{item.ayah}. {item.arabicText}</div>
-                            <div>{item.englishText}</div>
-                          </article>
-                        ) : (
-                          <article key={item.verse as number} className="space-y-1">
-                            <div className="font-semibold">{item.verse}.</div>
-                            <p>{item.text}</p>
-                          </article>
-                        )
-                      ))
+                    {showVerseOnly ? (() => {
+                      const filtered = fallbackChapterContent.filter((item) => {
+                        if ('verse' in item) return item.verse === showVerseOnly;
+                        if ('ayah' in item) return item.ayah === showVerseOnly;
+                        return false;
+                      });
+                      return filtered.map((item, idx) => {
+                        if ('ayah' in item) {
+                          return (
+                            <article key={idx} className="space-y-1">
+                              <div className="font-arabic text-right">{item.ayah}. {item.arabicText}</div>
+                              <div>{item.englishText}</div>
+                            </article>
+                          );
+                        } else {
+                          return (
+                            <article key={idx} className="space-y-1">
+                              <div className="font-semibold">{item.verse}.</div>
+                              <p>{item.text}</p>
+                            </article>
+                          );
+                        }
+                      });
+                    })()
                       : type === 'quran' ? (
                         quranVerseGroups.map((group, groupIndex) => (
                           <section key={`group-${groupIndex}`} className="space-y-3">
