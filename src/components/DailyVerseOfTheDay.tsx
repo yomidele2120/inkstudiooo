@@ -87,20 +87,34 @@ export default function DailyVerseOfTheDay() {
   }, [dateKey]);
 
   const copyToClipboard = async (data: DailyVerseData) => {
-    const verse = data.verse;
-    const textToCopy = data.source === 'quran'
-      ? `${verse.surahName} ${verse.surah}:${verse.ayah}\n${verse.arabicText}\n${verse.englishText}`
-      : `${verse.book} ${verse.chapter}:${verse.verse}\n${verse.text}`;
+    let textToCopy = '';
+    if (data.source === 'quran') {
+      const qVerse = data.verse as QuranVerse;
+      textToCopy = `${qVerse.surahName} ${qVerse.surah}:${qVerse.ayah}\n${qVerse.arabicText}\n${qVerse.englishText}`;
+    } else if (data.source === 'bible') {
+      const bVerse = data.verse as BibleVerse;
+      textToCopy = `${bVerse.book} ${bVerse.chapter}:${bVerse.verse}\n${bVerse.text}`;
+    } else {
+      const eVerse = data.verse as EthiopianVerse;
+      textToCopy = `${eVerse.book} ${eVerse.chapter}:${eVerse.verse}\n${eVerse.text}`;
+    }
 
     await navigator.clipboard.writeText(textToCopy);
     window.alert('Verse copied to clipboard');
   };
 
   const shareVerse = async (data: DailyVerseData) => {
-    const verse = data.verse;
-    const textToShare = data.source === 'quran'
-      ? `${verse.surahName} ${verse.surah}:${verse.ayah} - ${verse.englishText}`
-      : `${verse.book} ${verse.chapter}:${verse.verse} - ${verse.text}`;
+    let textToShare = '';
+    if (data.source === 'quran') {
+      const qVerse = data.verse as QuranVerse;
+      textToShare = `${qVerse.surahName} ${qVerse.surah}:${qVerse.ayah} - ${qVerse.englishText}`;
+    } else if (data.source === 'bible') {
+      const bVerse = data.verse as BibleVerse;
+      textToShare = `${bVerse.book} ${bVerse.chapter}:${bVerse.verse} - ${bVerse.text}`;
+    } else {
+      const eVerse = data.verse as EthiopianVerse;
+      textToShare = `${eVerse.book} ${eVerse.chapter}:${eVerse.verse} - ${eVerse.text}`;
+    }
 
     if (navigator.share) {
       await navigator.share({ title: 'Verse of the Day', text: textToShare, url: window.location.href });
