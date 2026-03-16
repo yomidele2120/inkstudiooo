@@ -1,9 +1,8 @@
 import { Helmet } from 'react-helmet';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import AIResponse from '@/components/AIResponse';
 import LanguageSelector from '@/components/LanguageSelector';
-import { useAIStream } from '@/hooks/useAIStream';
+import { useNavigate } from 'react-router-dom';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -39,17 +38,23 @@ const sharedValues = [
 
 export default function UnderstandingPage() {
   const [language, setLanguage] = useState('en');
-  const { response, isLoading, error, query: aiQuery } = useAIStream();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const goToTopic = (query: string) => {
+    const slug = encodeURIComponent(query);
+    navigate(`/topic/${slug}?source=faith&lang=${language}`);
+  };
 
   const handleExplore = (label: string) => {
     setActiveLabel(label);
-    aiQuery({ query: label, mode: 'topic', language });
+    goToTopic(label);
   };
 
   const handleValueClick = (title: string) => {
     setActiveLabel(title);
-    aiQuery({ query: `${title} — How do Christianity, Islam, Judaism, and Ethiopian Orthodox Christianity teach about ${title.toLowerCase()}? Include relevant scripture references.`, mode: 'topic', language });
+    const query = `${title} — How do Christianity, Islam, Judaism, and Ethiopian Orthodox Christianity teach about ${title.toLowerCase()}? Include relevant scripture references.`;
+    goToTopic(query);
   };
 
   return (
@@ -87,12 +92,11 @@ export default function UnderstandingPage() {
               <button
                 key={label}
                 onClick={() => handleExplore(label)}
-                disabled={isLoading}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   activeLabel === label
                     ? 'bg-accent text-accent-foreground'
                     : 'bg-secondary text-secondary-foreground hover:bg-accent/20'
-                } disabled:opacity-50`}
+                }`}
               >
                 {icon} {label}
               </button>
@@ -100,12 +104,11 @@ export default function UnderstandingPage() {
           </div>
         </section>
 
-        {/* AI Response area */}
-        {(response || isLoading || error) && (
-          <div className="mb-8">
-            <AIResponse content={response} isLoading={isLoading} error={error} />
-          </div>
-        )}
+        <div className="mb-8 rounded-lg border border-border bg-card p-5 text-center">
+          <p className="text-sm text-muted-foreground">
+            Select any topic above or inside shared values to open a dedicated topic route for deep exploration and direct sharing.
+          </p>
+        </div>
 
         <div className="gold-divider mb-8" />
 

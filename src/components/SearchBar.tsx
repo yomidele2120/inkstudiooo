@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { queryDetailUrl } from '@/lib/searchRoutes';
 
 interface SearchBarProps {
   large?: boolean;
@@ -15,7 +16,7 @@ export default function SearchBar({ large = false, language }: SearchBarProps) {
     e.preventDefault();
     if (query.trim()) {
       const lang = language || sessionStorage.getItem('su-search-lang') || 'en';
-      navigate(`/results?q=${encodeURIComponent(query.trim())}&lang=${lang}`);
+      navigate(queryDetailUrl(query.trim(), 'search', 'search', lang));
       setQuery('');
     }
   };

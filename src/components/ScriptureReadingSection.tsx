@@ -7,14 +7,14 @@ const scriptures = [
     title: 'Read Full Bible',
     icon: BookOpen,
     description: 'Explore the complete Bible with all books, chapters, and verses.',
-    path: '/read/bible',
+    path: '/scripture/bible',
     color: 'scripture-bible',
   },
   {
     title: 'Read Full Quran',
     icon: BookText,
     description: 'Read the Holy Quran with Arabic text and English translations.',
-    path: '/read/quran',
+    path: '/scripture/quran',
     color: 'scripture-quran',
   },
   {

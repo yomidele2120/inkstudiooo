@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet';
 import LandingHero from '@/components/Hero';
 import LandingDemo from '@/components/LandingDemo';
 import LandingFeatures from '@/components/LandingFeatures';
+import DailyVerseOfTheDay from '@/components/DailyVerseOfTheDay';
 import ScriptureReadingSection from '@/components/ScriptureReadingSection';
 import LandingMission from '@/components/LandingMission';
 import LandingTestimonials from '@/components/LandingTestimonials';
@@ -10,8 +11,7 @@ import LandingCTA from '@/components/LandingCTA';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import TopicCard from '@/components/TopicCard';
-import VerseCard from '@/components/VerseCard';
-import { topics, verseOfTheDay } from '@/data/mockScriptures';
+import { topics } from '@/data/mockScriptures';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -35,30 +35,17 @@ export default function Index() {
         <div className="gold-divider" />
 
         {/* Verse of the Day */}
-        <section className="py-16">
-          <div className="container">
-            <motion.div {...fadeUp} transition={{ duration: 0.5, delay: 0.1 }}>
-              <h2 className="font-heading text-2xl md:text-3xl font-semibold text-foreground mb-8 text-center">
-                Verse of the Day
-              </h2>
-              <div className="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-                <VerseCard data={{ type: 'quran', verse: verseOfTheDay.quran }} />
-                <VerseCard data={{ type: 'bible', verse: verseOfTheDay.bible }} />
-                <VerseCard data={{ type: 'ethiopian', verse: verseOfTheDay.ethiopian }} />
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        <div className="gold-divider" />
-
-        {/* Interactive AI Demo */}
-        <LandingDemo />
+        <DailyVerseOfTheDay />
 
         <div className="gold-divider" />
 
         {/* Scripture Reading Section */}
         <ScriptureReadingSection />
+
+        <div className="gold-divider" />
+
+        {/* Interactive AI Demo */}
+        <LandingDemo />
 
         <div className="gold-divider" />
 

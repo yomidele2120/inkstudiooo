@@ -1,9 +1,9 @@
 import { Helmet } from 'react-helmet';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import AIResponse from '@/components/AIResponse';
 import LanguageSelector from '@/components/LanguageSelector';
-import { useAIStream } from '@/hooks/useAIStream';
+import { useNavigate } from 'react-router-dom';
+import { queryDetailUrl } from '@/lib/searchRoutes';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -36,51 +36,31 @@ const debateQuestions = [
 export default function ComparePage() {
   const [language, setLanguage] = useState('en');
   const [debateMode, setDebateMode] = useState(false);
-  const { response, isLoading, error, query: aiQuery } = useAIStream();
   const [activeQuery, setActiveQuery] = useState<string | null>(null);
   const [customQuery, setCustomQuery] = useState('');
+  const navigate = useNavigate();
+  const isLoading = false;
+  const response = '';
+  const error = null;
 
   const handleCompare = (q: string) => {
     setActiveQuery(q);
-    aiQuery({ query: q, mode: debateMode ? 'debate' : 'compare', language });
+    const mode = debateMode ? 'debate' : 'compare';
+    navigate(queryDetailUrl(q, mode, 'compare', language));
   };
 
   const handleDebate = (q: string) => {
     setActiveQuery(q);
-    aiQuery({ query: q, mode: 'debate', language });
+    navigate(queryDetailUrl(q, 'debate', 'debate', language));
   };
 
   const handleCustom = (e: React.FormEvent) => {
     e.preventDefault();
     if (customQuery.trim()) {
-      handleCompare(customQuery.trim());
+      setActiveQuery(customQuery.trim());
+      const mode = debateMode ? 'debate' : 'compare';
+      navigate(queryDetailUrl(customQuery.trim(), mode, 'compare', language));
     }
-  };
-
-  // Detect if the response has multiple perspective sections for side-by-side
-  const isComparisonResponse = response && (
-    response.includes('## Christian') ||
-    response.includes('## Islamic') ||
-    response.includes('## Jewish')
-  );
-
-  // Parse comparison sections
-  const parseSections = (text: string) => {
-    const sections: { title: string; content: string }[] = [];
-    const regex = /##\s+(.+?)(?=\n##\s|\n*$)/gs;
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      const title = match[1].trim();
-      const startIdx = match.index + match[0].length;
-      const nextMatch = regex.exec(text);
-      const endIdx = nextMatch ? nextMatch.index : text.length;
-      regex.lastIndex = match.index + match[0].length;
-      sections.push({
-        title,
-        content: text.slice(startIdx, endIdx).trim(),
-      });
-    }
-    return sections;
   };
 
   return (
@@ -182,20 +162,17 @@ export default function ComparePage() {
           </div>
         </div>
 
-        {/* Side-by-side view for comparison responses */}
-        {!isLoading && isComparisonResponse ? (
-          <div>
-            {/* Full response with audio */}
-            <AIResponse content={response} isLoading={isLoading} error={error} />
-          </div>
-        ) : (
-          <AIResponse
-            content={response}
-            isLoading={isLoading}
-            error={error}
-            placeholder="Click a comparison or debate topic above, or enter your own question to get a detailed AI analysis."
-          />
-        )}
+        <div className="rounded-lg border border-border bg-card p-6 text-center">
+          <h2 className="text-lg font-semibold text-foreground mb-2">Use Compare & Debate</h2>
+          <p className="text-sm text-muted-foreground">
+            Select a quick comparison or debate question above, or enter your own question, to open a dedicated analysis page with a shareable URL.
+          </p>
+          {activeQuery && (
+            <p className="mt-3 text-sm text-foreground/80">
+              Last selected: <span className="font-medium">{activeQuery}</span>
+            </p>
+          )}
+        </div>
       </div>
     </div>
   </>

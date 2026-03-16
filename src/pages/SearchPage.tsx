@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet';
 import { useState } from 'react';
 import { History, X } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
+import { queryDetailUrl } from '@/lib/searchRoutes';
 import LanguageSelector from '@/components/LanguageSelector';
 import SearchHistoryPanel from '@/components/SearchHistoryPanel';
 import { useSearchHistory, SearchHistoryItem } from '@/hooks/useSearchHistory';
@@ -22,7 +23,7 @@ export default function SearchPage() {
   };
 
   const handleHistorySelect = (item: SearchHistoryItem) => {
-    navigate(`/results?q=${encodeURIComponent(item.query)}&cached=1`);
+    navigate(queryDetailUrl(item.query, 'search', 'search', language));
     setShowHistory(false);
   };
 
@@ -80,7 +81,7 @@ export default function SearchPage() {
               ].map((q) => (
                 <button
                   key={q}
-                  onClick={() => navigate(`/results?q=${encodeURIComponent(q)}&lang=${language}`)}
+                  onClick={() => navigate(queryDetailUrl(q, 'search', 'search', language))}
                   className="px-3 py-1.5 rounded-full text-sm bg-secondary text-secondary-foreground hover:bg-primary/10 hover:text-primary transition-colors"
                 >
                   {q}
