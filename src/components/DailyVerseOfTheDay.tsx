@@ -169,7 +169,7 @@ export default function DailyVerseOfTheDay() {
                 <h3 className="text-sm font-bold text-primary mb-1">{subtitle}</h3>
                 <div className="mb-3 text-sm text-muted-foreground">{dateKey}</div>
 
-                <VerseCard data={{ type: source, verse }} />
+                <VerseCard data={{ type: data.source, verse } as any} />
 
                 <div className="mt-4 flex items-center justify-between">
                   <Link to={toReadPath(source)} className="text-primary hover:underline text-sm">
