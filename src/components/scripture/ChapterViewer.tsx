@@ -12,12 +12,10 @@ interface ChapterViewerProps {
   fontSize: number;
 }
 
+const DEFAULT_CHUNK = 15;
+
 function getChunkSize() {
-  if (typeof window === 'undefined') return 10;
-  const vh = window.innerHeight;
-  if (vh > 900) return 15;
-  if (vh > 600) return 10;
-  return 7;
+  return DEFAULT_CHUNK;
 }
 
 export default function ChapterViewer({ type, book, chapter, allVerses, fontSize }: ChapterViewerProps) {
