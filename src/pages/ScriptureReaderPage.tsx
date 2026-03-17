@@ -1,9 +1,12 @@
 import { Helmet } from 'react-helmet';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ChapterViewer from '@/components/scripture/ChapterViewer';
+import SurahHeader from '@/components/scripture/SurahHeader';
+import AIReflectionBox from '@/components/scripture/AIReflectionBox';
+import RelatedSurahs from '@/components/scripture/RelatedSurahs';
 import type { VerseItem } from '@/components/scripture/VerseBlock';
 import { sampleQuranVerses, sampleBibleVerses, sampleEthiopianVerses } from '@/data/mockScriptures';
 
@@ -134,7 +137,6 @@ export default function ScriptureReaderPage() {
     ? type === 'quran' ? `${selectedBook}` : `${selectedBook} Chapter ${selectedChapter}`
     : scripture.title;
 
-  // Breadcrumb parts
   const breadcrumbs = [
     { label: 'Home', to: '/' },
     { label: scripture.title, to: `/scripture/${type}` },
@@ -152,7 +154,7 @@ export default function ScriptureReaderPage() {
       <div className="min-h-screen py-8">
         <div className="container max-w-4xl">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-8 flex-wrap">
+          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 flex-wrap">
             {breadcrumbs.map((bc, i) => (
               <span key={i} className="flex items-center gap-1.5">
                 {i > 0 && <ChevronRight className="h-3 w-3" />}
@@ -165,16 +167,13 @@ export default function ScriptureReaderPage() {
             ))}
           </nav>
 
-          {/* Header */}
-          <div className="text-center mb-10">
-            <BookOpen className="h-10 w-10 text-primary mx-auto mb-3" />
-            <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground">{pageTitle}</h1>
-            {isSectionForReading && (
-              <p className="text-muted-foreground mt-2 text-sm">
-                Read, scroll, and explore verse explanations below.
-              </p>
-            )}
-          </div>
+          {/* Header - only show generic header when NOT in reading mode */}
+          {!isSectionForReading && (
+            <div className="text-center mb-10">
+              <BookOpen className="h-10 w-10 text-primary mx-auto mb-3" />
+              <h1 className="font-heading text-3xl md:text-4xl font-bold text-foreground">{pageTitle}</h1>
+            </div>
+          )}
 
           {/* Book list */}
           {!isBookSelected && (
@@ -215,63 +214,49 @@ export default function ScriptureReaderPage() {
 
           {/* Chapter reading view */}
           {isSectionForReading && (
-            <div className="bg-card border border-border rounded-xl p-6">
-              {/* Navigation controls */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      if (type === 'quran') {
-                        const cur = Number(selectedBook?.replace(/\D/g, '')) || 0;
-                        if (cur > 1) navigate(`/scripture/${type}/Surah%20${cur - 1}`);
-                      } else if (selectedChapter && selectedChapter > 1) {
-                        navigate(`/scripture/${type}/${encodeURIComponent(selectedBook!)}/${selectedChapter - 1}`);
-                      }
-                    }}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
-                  >
-                    ← Previous
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (type === 'quran') {
-                        const cur = Number(selectedBook?.replace(/\D/g, '')) || 0;
-                        if (cur < 114) navigate(`/scripture/${type}/Surah%20${cur + 1}`);
-                      } else if (selectedChapter && selectedChapter < chapterCount) {
-                        navigate(`/scripture/${type}/${encodeURIComponent(selectedBook!)}/${selectedChapter + 1}`);
-                      }
-                    }}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
-                  >
-                    Next →
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setFontSize((p) => Math.max(14, p - 2))}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
-                  >
-                    A−
-                  </button>
-                  <span className="text-xs text-muted-foreground">{fontSize}px</span>
-                  <button
-                    onClick={() => setFontSize((p) => Math.min(28, p + 2))}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
-                  >
-                    A+
-                  </button>
-                </div>
-              </div>
-
-              {/* Chapter viewer with chunked display */}
-              <ChapterViewer
+            <>
+              {/* Enhanced header with metadata */}
+              <SurahHeader
                 type={type!}
                 book={selectedBook!}
                 chapter={selectedChapter}
-                allVerses={allVerses}
-                fontSize={fontSize}
+                totalVerses={allVerses.length}
+                chapterCount={chapterCount}
               />
-            </div>
+
+              {/* Font size controls */}
+              <div className="flex items-center justify-end gap-2 mb-4">
+                <span className="text-xs text-muted-foreground">Font:</span>
+                {[14, 16, 18, 22].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setFontSize(size)}
+                    className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
+                      fontSize === size
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground hover:bg-accent'
+                    }`}
+                  >
+                    {size === 14 ? 'S' : size === 16 ? 'M' : size === 18 ? 'L' : 'XL'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Main reading area */}
+              <div className="bg-card border border-border rounded-xl p-5 sm:p-6">
+                <ChapterViewer
+                  type={type!}
+                  book={selectedBook!}
+                  chapter={selectedChapter}
+                  allVerses={allVerses}
+                  fontSize={fontSize}
+                />
+              </div>
+
+              {/* Footer: AI Reflection + Related */}
+              <AIReflectionBox type={type!} book={selectedBook!} chapter={selectedChapter} />
+              <RelatedSurahs type={type!} book={selectedBook!} chapter={selectedChapter} />
+            </>
           )}
         </div>
       </div>

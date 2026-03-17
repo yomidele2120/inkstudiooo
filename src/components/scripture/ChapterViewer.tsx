@@ -3,6 +3,7 @@ import { ChevronDown, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import VerseBlock, { VerseItem } from './VerseBlock';
 import ChunkExplanation from './ChunkExplanation';
+import JumpToVerse from './JumpToVerse';
 
 interface ChapterViewerProps {
   type: string;
@@ -14,12 +15,8 @@ interface ChapterViewerProps {
 
 const DEFAULT_CHUNK = 15;
 
-function getChunkSize() {
-  return DEFAULT_CHUNK;
-}
-
 export default function ChapterViewer({ type, book, chapter, allVerses, fontSize }: ChapterViewerProps) {
-  const chunkSize = useMemo(() => getChunkSize(), []);
+  const chunkSize = DEFAULT_CHUNK;
   const [visibleCount, setVisibleCount] = useState(chunkSize);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +46,22 @@ export default function ChapterViewer({ type, book, chapter, allVerses, fontSize
     }, 100);
   }, [chunkSize, totalVerses]);
 
+  const handleJump = useCallback((verseNum: number) => {
+    // Make sure enough verses are visible
+    const neededCount = allVerses.findIndex((v) =>
+      'ayah' in v ? v.ayah === verseNum : ('verse' in v ? (v as any).verse === verseNum : false)
+    ) + 1;
+    if (neededCount > visibleCount) {
+      setVisibleCount(Math.min(neededCount + chunkSize, totalVerses));
+    }
+    setTimeout(() => {
+      const el = document.getElementById(`verse-${verseNum}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.classList.add('ring-2', 'ring-primary/40', 'rounded-lg');
+      setTimeout(() => el?.classList.remove('ring-2', 'ring-primary/40', 'rounded-lg'), 2000);
+    }, 150);
+  }, [allVerses, visibleCount, chunkSize, totalVerses]);
+
   // Reset when chapter/book changes
   useEffect(() => {
     setVisibleCount(chunkSize);
@@ -64,19 +77,28 @@ export default function ChapterViewer({ type, book, chapter, allVerses, fontSize
   }
 
   return (
-    <div className="space-y-6">
-      {/* Progress bar */}
-      <div className="flex items-center gap-3">
-        <Progress value={progress} className="h-2 flex-1" />
-        <span className="text-xs text-muted-foreground whitespace-nowrap">
-          {Math.min(visibleCount, totalVerses)}/{totalVerses} verses
-        </span>
+    <div className="space-y-5">
+      {/* Controls bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <JumpToVerse totalVerses={totalVerses} type={type} onJump={handleJump} />
+        <div className="flex items-center gap-3 flex-1 justify-end">
+          <Progress value={progress} className="h-2 w-32 sm:w-48" />
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            {Math.min(visibleCount, totalVerses)}/{totalVerses}
+          </span>
+        </div>
       </div>
 
       {/* Chunked verse display with per-chunk explanations */}
       {chunks.map((chunk, idx) => (
         <div key={`chunk-${idx}`} className="space-y-4">
-          <VerseBlock verses={chunk.verses} type={type} fontSize={fontSize} />
+          <VerseBlock
+            verses={chunk.verses}
+            type={type}
+            fontSize={fontSize}
+            book={book}
+            chapter={chapter}
+          />
           <ChunkExplanation
             type={type}
             book={book}
@@ -95,14 +117,14 @@ export default function ChapterViewer({ type, book, chapter, allVerses, fontSize
             className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-border bg-card hover:bg-accent/30 text-foreground text-sm font-medium transition-colors"
           >
             <ChevronDown className="h-4 w-4" />
-            View More Verses
+            View More Verses ({totalVerses - visibleCount} remaining)
           </button>
         </div>
       )}
 
       {!hasMore && totalVerses > 0 && (
         <p className="text-center text-xs text-muted-foreground py-2">
-          — End of chapter —
+          — End of {type === 'quran' ? 'Surah' : 'chapter'} —
         </p>
       )}
     </div>
