@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      search_cache: {
+        Row: {
+          created_at: string
+          hit_count: number
+          id: string
+          language: string
+          mode: string
+          query_hash: string
+          query_text: string
+          response: string
+        }
+        Insert: {
+          created_at?: string
+          hit_count?: number
+          id?: string
+          language?: string
+          mode?: string
+          query_hash: string
+          query_text: string
+          response: string
+        }
+        Update: {
+          created_at?: string
+          hit_count?: number
+          id?: string
+          language?: string
+          mode?: string
+          query_hash?: string
+          query_text?: string
+          response?: string
+        }
+        Relationships: []
+      }
       search_history: {
         Row: {
           anon_id: string
