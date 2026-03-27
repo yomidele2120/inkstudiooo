@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Loader2, Sparkles, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAIStream } from '@/hooks/useAIStream';
+import { getCachedResponse, setCachedResponse } from '@/lib/searchCache';
 
 interface AIDescriptorsProps {
   type: string;
@@ -14,11 +15,25 @@ export default function AIDescriptors({ type, verseRef, verseText }: AIDescripto
   const [generating, setGenerating] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const { response: tagExplanation, isLoading: tagLoading, query: queryTag } = useAIStream();
+  const abortRef = useRef<AbortController | null>(null);
 
   const generateDescriptors = useCallback(async () => {
+    const cacheKey = `descriptors:${type}:${verseRef}`;
+    const cached = getCachedResponse(cacheKey, 'scripture', 'en');
+    if (cached) {
+      const parsed = cached.split(',').map(t => t.trim()).filter(t => t.length > 0 && t.length < 40);
+      setTags(parsed.length > 0 ? parsed : ['Faith', 'Guidance', 'Mercy']);
+      return;
+    }
+
     setGenerating(true);
     setTags([]);
     setSelectedTag(null);
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/religious-ai`;
       const resp = await fetch(url, {
@@ -28,10 +43,11 @@ export default function AIDescriptors({ type, verseRef, verseText }: AIDescripto
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          query: `For this verse from the ${type === 'quran' ? 'Quran' : 'Bible'}: "${verseText}" (${verseRef}), generate EXACTLY 5-7 single-word or short-phrase descriptors representing key themes, concepts, or lessons. Return ONLY a comma-separated list, nothing else. Example: "Mercy, Divine Justice, Faith, Patience, Gratitude"`,
+          query: `For this ${type === 'quran' ? 'Quran' : 'Bible'} verse "${verseText}" (${verseRef}), generate EXACTLY 5-7 single-word or short-phrase descriptors of key themes. Return ONLY a comma-separated list. Example: "Mercy, Faith, Patience"`,
           mode: 'scripture',
           language: 'en',
         }),
+        signal: controller.signal,
       });
       if (!resp.ok) throw new Error('Failed');
       const reader = resp.body?.getReader();
@@ -63,9 +79,14 @@ export default function AIDescriptors({ type, verseRef, verseText }: AIDescripto
         .split(',')
         .map((t: string) => t.trim())
         .filter((t: string) => t.length > 0 && t.length < 40);
-      setTags(parsed.length > 0 ? parsed : ['Faith', 'Guidance', 'Mercy']);
-    } catch {
-      setTags(['Faith', 'Guidance', 'Mercy', 'Wisdom', 'Devotion']);
+      const finalTags = parsed.length > 0 ? parsed : ['Faith', 'Guidance', 'Mercy'];
+      setTags(finalTags);
+      // Cache the raw comma-separated result
+      setCachedResponse(cacheKey, 'scripture', 'en', finalTags.join(', '));
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
+        setTags(['Faith', 'Guidance', 'Mercy', 'Wisdom', 'Devotion']);
+      }
     } finally {
       setGenerating(false);
     }
@@ -75,7 +96,7 @@ export default function AIDescriptors({ type, verseRef, verseText }: AIDescripto
     setSelectedTag(tag);
     const scripture = type === 'quran' ? 'Quran' : type === 'bible' ? 'Bible' : 'Scripture';
     queryTag({
-      query: `Explain the concept of "${tag}" as it relates to ${verseRef} from the ${scripture}: "${verseText}". Include related verses from other scriptures and provide a brief spiritual reflection. Keep it concise (3-4 paragraphs).`,
+      query: `Explain "${tag}" as it relates to ${verseRef} from the ${scripture}: "${verseText}". Include related verses and a brief reflection (3-4 paragraphs).`,
       mode: 'scripture',
       language: 'en',
     });

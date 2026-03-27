@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ChevronDown, ChevronUp, Loader2, Sparkles } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useAIStream } from '@/hooks/useAIStream';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -56,7 +57,9 @@ export default function ChunkExplanation({ type, book, chapter, startVerse, endV
           )}
           {error && <p className="text-destructive">Error: {error}</p>}
           {!isLoading && response && (
-            <p className="whitespace-pre-wrap text-foreground">{response}</p>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-foreground">
+              <ReactMarkdown>{response}</ReactMarkdown>
+            </div>
           )}
           {!isLoading && !error && !response && (
             <p className="text-muted-foreground">Loading…</p>
