@@ -19,6 +19,16 @@ export function useAIStream(options?: UseAIStreamOptions) {
     religions?: string[];
     language?: string;
   }) => {
+    // Check client-side cache first
+    const cached = getCachedResponse(params.query, params.mode || 'search', params.language || 'en');
+    if (cached) {
+      setResponse(cached);
+      setIsLoading(false);
+      setError(null);
+      options?.onComplete?.(cached);
+      return;
+    }
+
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
