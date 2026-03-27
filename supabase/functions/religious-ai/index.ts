@@ -42,6 +42,15 @@ SCRIPTURE FORMAT:
 
 When database context is provided, incorporate those real verses into your answer but also supplement with your broader knowledge.`;
 
+// Simple hash function for query caching
+async function hashQuery(text: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text.toLowerCase().trim());
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -57,13 +66,59 @@ serve(async (req) => {
       });
     }
 
-    // Try to fetch relevant verses from database for context
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // --- CACHE CHECK ---
+    const cacheKey = `${mode || "search"}:${language || "en"}:${query}`;
+    const queryHash = await hashQuery(cacheKey);
+
+    try {
+      const { data: cached } = await supabase
+        .from("search_cache")
+        .select("id, response")
+        .eq("query_hash", queryHash)
+        .maybeSingle();
+
+      if (cached?.response) {
+        // Increment hit count in background (fire-and-forget)
+        supabase
+          .from("search_cache")
+          .update({ hit_count: undefined }) // we'll use raw SQL via rpc if needed
+          .eq("id", cached.id)
+          .then(() => {});
+
+        // Return cached response as a fake SSE stream for client compatibility
+        const cachedText = cached.response;
+        const encoder = new TextEncoder();
+        const stream = new ReadableStream({
+          start(controller) {
+            // Send in chunks to simulate streaming
+            const chunkSize = 200;
+            for (let i = 0; i < cachedText.length; i += chunkSize) {
+              const chunk = cachedText.slice(i, i + chunkSize);
+              const sseData = JSON.stringify({
+                choices: [{ delta: { content: chunk } }],
+              });
+              controller.enqueue(encoder.encode(`data: ${sseData}\n\n`));
+            }
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            controller.close();
+          },
+        });
+
+        return new Response(stream, {
+          headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+        });
+      }
+    } catch (e) {
+      console.log("Cache lookup failed, continuing:", e);
+    }
+
+    // --- DB CONTEXT ---
     let dbContext = "";
     try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
       const keywords = query
         .replace(/[^\w\s]/g, "")
         .split(/\s+/)
@@ -226,7 +281,58 @@ Remain completely neutral and present each viewpoint fairly.`;
       });
     }
 
-    return new Response(response.body, {
+    // --- STREAM + CACHE WRITE ---
+    // Tee the stream: one for the client, one to collect full text for caching
+    const [clientStream, cacheStream] = response.body!.tee();
+
+    // Background: read cacheStream and save to DB when done
+    (async () => {
+      try {
+        const reader = cacheStream.getReader();
+        const decoder = new TextDecoder();
+        let fullText = "";
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          let newlineIdx: number;
+          while ((newlineIdx = buffer.indexOf("\n")) !== -1) {
+            let line = buffer.slice(0, newlineIdx);
+            buffer = buffer.slice(newlineIdx + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (!line.startsWith("data: ")) continue;
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === "[DONE]") continue;
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) fullText += content;
+            } catch {}
+          }
+        }
+
+        if (fullText.length > 50) {
+          await supabase.from("search_cache").upsert(
+            {
+              query_hash: queryHash,
+              query_text: query,
+              mode: mode || "search",
+              language: language || "en",
+              response: fullText,
+              hit_count: 1,
+            },
+            { onConflict: "query_hash" }
+          );
+        }
+      } catch (e) {
+        console.log("Cache write failed:", e);
+      }
+    })();
+
+    return new Response(clientStream, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
