@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { getCachedResponse, setCachedResponse } from '@/lib/searchCache';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/religious-ai`;
 
