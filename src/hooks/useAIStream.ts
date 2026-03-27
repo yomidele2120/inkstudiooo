@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { getCachedResponse, setCachedResponse } from '@/lib/searchCache';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/religious-ai`;
 
@@ -18,6 +19,16 @@ export function useAIStream(options?: UseAIStreamOptions) {
     religions?: string[];
     language?: string;
   }) => {
+    // Check client-side cache first
+    const cached = getCachedResponse(params.query, params.mode || 'search', params.language || 'en');
+    if (cached) {
+      setResponse(cached);
+      setIsLoading(false);
+      setError(null);
+      options?.onComplete?.(cached);
+      return;
+    }
+
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
@@ -101,6 +112,10 @@ export function useAIStream(options?: UseAIStreamOptions) {
         }
       }
 
+      // Cache the completed response
+      if (fullText) {
+        setCachedResponse(params.query, params.mode || 'search', params.language || 'en', fullText);
+      }
       options?.onComplete?.(fullText);
     } catch (e: any) {
       if (e.name !== 'AbortError') {
