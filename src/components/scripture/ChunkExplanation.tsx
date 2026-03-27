@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ChevronDown, ChevronUp, Loader2, Sparkles } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useAIStream } from '@/hooks/useAIStream';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
