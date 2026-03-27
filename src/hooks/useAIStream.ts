@@ -112,6 +112,10 @@ export function useAIStream(options?: UseAIStreamOptions) {
         }
       }
 
+      // Cache the completed response
+      if (fullText) {
+        setCachedResponse(params.query, params.mode || 'search', params.language || 'en', fullText);
+      }
       options?.onComplete?.(fullText);
     } catch (e: any) {
       if (e.name !== 'AbortError') {
