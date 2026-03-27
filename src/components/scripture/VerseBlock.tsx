@@ -32,7 +32,7 @@ const VerseBlock = memo(function VerseBlock({ verses, type, fontSize, book, chap
 
   if (type === 'quran') {
     return (
-      <div className="space-y-1" style={{ fontSize: `${fontSize}px` }}>
+      <div className="space-y-1">
         {verses.map((item) => {
           if (!isQuranVerse(item)) return null;
           const verseRef = `${book || 'Quran'} ${item.ayah}`;
