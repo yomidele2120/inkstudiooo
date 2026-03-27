@@ -32,7 +32,7 @@ const VerseBlock = memo(function VerseBlock({ verses, type, fontSize, book, chap
 
   if (type === 'quran') {
     return (
-      <div className="space-y-1" style={{ fontSize: `${fontSize}px` }}>
+      <div className="space-y-1">
         {verses.map((item) => {
           if (!isQuranVerse(item)) return null;
           const verseRef = `${book || 'Quran'} ${item.ayah}`;
@@ -92,7 +92,7 @@ const VerseBlock = memo(function VerseBlock({ verses, type, fontSize, book, chap
 
   // Bible / Ethiopian
   return (
-    <div className="space-y-1" style={{ fontSize: `${fontSize}px` }}>
+    <div className="space-y-1">
       {verses.map((item) => {
         if (isQuranVerse(item)) return null;
         const verseRef = `${book || 'Scripture'} ${chapter ? `${chapter}:` : ''}${item.verse}`;
@@ -108,7 +108,7 @@ const VerseBlock = memo(function VerseBlock({ verses, type, fontSize, book, chap
               </span>
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-foreground flex-1 leading-relaxed">{item.text}</p>
+                  <p className="text-foreground flex-1 leading-relaxed" style={{ fontSize: `${fontSize}px` }}>{item.text}</p>
                   <VerseActions
                     verseRef={verseRef}
                     verseText={item.text}
