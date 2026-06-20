@@ -40,14 +40,25 @@ export default function SearchResultsPage() {
     aiQuery({ query, mode: 'search', language });
   }, [query, language, cached, aiQuery]);
 
+  const canonical = `https://inkstudiooo.lovable.app/results${query ? `?q=${encodeURIComponent(query)}` : ''}`;
+  const pageTitle = query ? `${query} — Scripture Unity AI` : 'Search Results — Scripture Unity AI';
+  const pageDesc = query
+    ? `AI-powered scripture search results for "${query}" across the Bible, Qur'an, and Ethiopian Bible with comparative insights.`
+    : 'AI-powered scripture search results across the Bible, Qur\'an, and Ethiopian Bible with comparative scholarly insights.';
+
   return (
     <>
       <Helmet>
-        <title>{query ? `${query} — Scripture Unity AI` : 'Search Results'}</title>
-        <meta name="description" content="AI-powered scripture search results with comparative insights." />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDesc} />
+        <meta property="og:url" content={canonical} />
       </Helmet>
       <div className="min-h-screen py-8">
         <div className="container max-w-4xl">
+          <h1 className="sr-only">{query ? `Search results for ${query}` : 'Search Results'}</h1>
           <div className="flex items-center gap-3 mb-6">
             <Link
               to="/search"

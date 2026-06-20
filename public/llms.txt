@@ -1,0 +1,16 @@
+# Scripture Unity AI
+
+> AI-powered interfaith scripture research platform for searching, comparing, and studying the Qur'an, Bible, and Ethiopian Bible with scholarly context.
+
+Scripture Unity AI helps users explore religious texts across traditions through neutral, scholarly AI responses. Users can search any question across scriptures, compare verses and topics side-by-side, read full chapters/surahs with AI-generated reflections, and explore curated topics.
+
+## Pages
+
+- [Home](/): Overview of the platform with featured topics, daily verse, and reading entry points.
+- [Search](/search): Ask any question and get AI-generated responses across the Bible, Qur'an, and Ethiopian Bible.
+- [Topics](/topics): Browse curated themes (love, justice, mercy, prayer, etc.) across all traditions.
+- [Compare](/compare): Compare verses, topics, and theological concepts side-by-side across faiths.
+- [Understanding](/understanding): Educational guides on interfaith topics and scriptural interpretation.
+- [Read the Bible](/scripture/bible): Browse and read books of the Holy Bible with AI-generated commentary.
+- [Read the Qur'an](/scripture/quran): Browse and read Surahs with Arabic, English translation, and AI reflections.
+- [Read Ethiopian & Other Scriptures](/scripture/other): Read Ethiopian biblical texts including Enoch, Jubilees, and Meqabyan.

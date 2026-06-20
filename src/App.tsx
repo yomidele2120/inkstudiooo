@@ -45,6 +45,7 @@ const App = () => (
         <ThemeInitializer />
         <ScrollToTop />
         <Navbar />
+        <main>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchPage />} />
@@ -64,6 +65,7 @@ const App = () => (
           <Route path="/admin/import" element={<AdminImport />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </main>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
