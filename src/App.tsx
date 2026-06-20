@@ -45,6 +45,7 @@ const App = () => (
         <ThemeInitializer />
         <ScrollToTop />
         <Navbar />
+        <main>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchPage />} />
