@@ -27,10 +27,10 @@ export default function Index() {
           name="description"
           content="Explore AI-powered scripture comparison across the Quran, Bible, and Ethiopian Bible. Discover unity, listen to audio teachings, and gain scholarly insights."
         />
-        <link rel="canonical" href="https://inkstudiooo.lovable.app/" />
+        <link rel="canonical" href="https://Scriptureunityai.vercel.app/" />
         <meta property="og:title" content="Scripture Unity AI – Compare Scriptures and Promote Oneness" />
         <meta property="og:description" content="Explore AI-powered scripture comparison across the Quran, Bible, and Ethiopian Bible." />
-        <meta property="og:url" content="https://inkstudiooo.lovable.app/" />
+        <meta property="og:url" content="https://Scriptureunityai.vercel.app/" />
       </Helmet>
       <div className="min-h-screen">
         {/* Hero */}

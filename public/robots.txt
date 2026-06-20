@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://inkstudiooo.lovable.app/sitemap.xml
+Sitemap: https://Scriptureunityai.vercel.app/sitemap.xml

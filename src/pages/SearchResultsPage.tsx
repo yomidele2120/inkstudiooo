@@ -40,7 +40,7 @@ export default function SearchResultsPage() {
     aiQuery({ query, mode: 'search', language });
   }, [query, language, cached, aiQuery]);
 
-  const canonical = `https://inkstudiooo.lovable.app/results${query ? `?q=${encodeURIComponent(query)}` : ''}`;
+  const canonical = `https://Scriptureunityai.vercel.app/results${query ? `?q=${encodeURIComponent(query)}` : ''}`;
   const pageTitle = query ? `${query} — Scripture Unity AI` : 'Search Results — Scripture Unity AI';
   const pageDesc = query
     ? `AI-powered scripture search results for "${query}" across the Bible, Qur'an, and Ethiopian Bible with comparative insights.`

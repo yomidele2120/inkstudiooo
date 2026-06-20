@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const BASE_URL = 'https://inkstudiooo.lovable.app';
+const BASE_URL = 'https://Scriptureunityai.vercel.app';
 
 const pages = [
   { url: '/', priority: 1.0 },
