@@ -145,7 +145,7 @@ export default function ScriptureReaderPage() {
   ];
 
   const canonicalPath = `/scripture/${type}${selectedBook ? `/${encodeURIComponent(selectedBook)}` : ''}${selectedChapter && type !== 'quran' ? `/${selectedChapter}` : ''}`;
-  const canonical = `https://inkstudiooo.lovable.app${canonicalPath}`;
+  const canonical = `https://Scriptureunityai.vercel.app${canonicalPath}`;
   const helmetTitle = `${pageTitle} — Scripture Unity AI`;
   const helmetDesc = isSectionForReading
     ? `Read ${pageTitle} on Scripture Unity AI with verse-by-verse text, translations, AI-generated reflections, and scholarly commentary across faith traditions.`
