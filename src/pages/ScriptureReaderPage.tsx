@@ -144,11 +144,22 @@ export default function ScriptureReaderPage() {
     ...(selectedChapter && type !== 'quran' ? [{ label: `Chapter ${selectedChapter}`, to: '' }] : []),
   ];
 
+  const canonicalPath = `/scripture/${type}${selectedBook ? `/${encodeURIComponent(selectedBook)}` : ''}${selectedChapter && type !== 'quran' ? `/${selectedChapter}` : ''}`;
+  const canonical = `https://inkstudiooo.lovable.app${canonicalPath}`;
+  const helmetTitle = `${pageTitle} — Scripture Unity AI`;
+  const helmetDesc = isSectionForReading
+    ? `Read ${pageTitle} on Scripture Unity AI with verse-by-verse text, translations, AI-generated reflections, and scholarly commentary across faith traditions.`
+    : `Browse ${scripture.title} on Scripture Unity AI — read full chapters with translations, AI reflections, and interfaith scholarly insights.`;
+
   return (
     <>
       <Helmet>
-        <title>{pageTitle} — Scripture Unity AI</title>
-        <meta name="description" content={`Read ${pageTitle} on Scripture Unity AI.`} />
+        <title>{helmetTitle}</title>
+        <meta name="description" content={helmetDesc} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={helmetTitle} />
+        <meta property="og:description" content={helmetDesc} />
+        <meta property="og:url" content={canonical} />
       </Helmet>
 
       <div className="min-h-screen py-8">
