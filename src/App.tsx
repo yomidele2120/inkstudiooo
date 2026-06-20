@@ -65,6 +65,7 @@ const App = () => (
           <Route path="/admin/import" element={<AdminImport />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </main>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

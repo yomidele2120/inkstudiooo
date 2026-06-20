@@ -82,16 +82,16 @@ export default function SurahHeader({ type, book, chapter, totalVerses, chapterC
                 <p className="font-arabic text-2xl text-primary font-bold mb-1" dir="rtl">
                   {surahInfo.arabic}
                 </p>
-                <h2 className="font-heading text-xl font-bold text-foreground">
+                <h1 className="font-heading text-xl font-bold text-foreground">
                   {surahInfo.english} <span className="text-muted-foreground font-normal text-base">— {surahInfo.meaning}</span>
-                </h2>
+                </h1>
               </>
             ) : type === 'quran' ? (
-              <h2 className="font-heading text-xl font-bold text-foreground">{book}</h2>
+              <h1 className="font-heading text-xl font-bold text-foreground">{book}</h1>
             ) : (
-              <h2 className="font-heading text-xl font-bold text-foreground">
+              <h1 className="font-heading text-xl font-bold text-foreground">
                 {book} <span className="text-muted-foreground font-normal text-base">— Chapter {chapter}</span>
-              </h2>
+              </h1>
             )}
             <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
@@ -106,6 +106,8 @@ export default function SurahHeader({ type, book, chapter, totalVerses, chapterC
 
           <button
             onClick={handleBookmark}
+            aria-label={bookmarked ? 'Remove chapter bookmark' : 'Bookmark this chapter'}
+            aria-pressed={bookmarked}
             className={`p-2.5 rounded-lg border transition-colors ${
               bookmarked
                 ? 'border-primary/40 bg-primary/10 text-primary'
