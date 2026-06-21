@@ -1,0 +1,14 @@
+{
+  "name": "Scripture Unity AI",
+  "short_name": "Scripture Unity AI",
+  "description": "AI-powered interfaith scripture research for the Qur'an, Bible, and Ethiopian Bible.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0b0f",
+  "theme_color": "#c4993c",
+  "icons": [
+    { "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
